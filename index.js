@@ -81,9 +81,11 @@ class AngularTemplateCacheWebpackPlugin {
     }
 
     apply(compiler) {
-
         compiler.hooks.thisCompilation.tap('AngularTemplateCacheWebpackPlugin', (compilation) => {
+            this.files.forEach(f => compilation.fileDependencies.add(path.join(compiler.context, f)));
             compilation.hooks.additionalAssets.tapAsync('AngularTemplateCacheWebpackPlugin', (callback) => {
+                this.processTemplates();
+
                 let cachedTemplates = '';
 
                 this.templatelist.forEach((template) => {
@@ -103,13 +105,10 @@ class AngularTemplateCacheWebpackPlugin {
 
                 callback();
             });
-
         });
     }
 
     init() {
-        this.templatelist = [];
-
         this.files = typeof this.options.source === 'string'
             ? glob.sync(this.options.source)
             : this.options.source;
@@ -117,11 +116,10 @@ class AngularTemplateCacheWebpackPlugin {
         this.templateBody = this.options.templateBody;
         this.templateHeader = this.options.templateHeader;
         this.templateFooter = this.options.templateFooter;
-
-        this.processTemplates();
     }
 
     processTemplates() {
+        this.templatelist = [];
         this.processHeader();
         this.processBody();
         this.processFooter();
@@ -143,7 +141,7 @@ class AngularTemplateCacheWebpackPlugin {
             let htmlRootDir = globParent(this.options.source);
             let filename = path.relative(htmlRootDir, file);
 
-            let url = path.join(this.options.root, filename);
+            let url = path.join(this.options.root, filename).replace(/\\/g, '/');
             if (this.options.root === '.' || this.options.root.indexOf('./') === 0) {
                 url = './' + url;
             }
