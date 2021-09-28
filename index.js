@@ -102,6 +102,12 @@ class AngularTemplateCacheWebpackPlugin {
                     },
                     map: function () {
                         return;
+                    },
+                    sourceAndMap: function () {
+                        return {
+                            source: cachedTemplates,
+                            map: null
+                        };
                     }
                 };
 
