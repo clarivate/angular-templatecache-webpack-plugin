@@ -100,7 +100,9 @@ class AngularTemplateCacheWebpackPlugin {
                     size: function () {
                         return cachedTemplates.length;
                     },
-
+                    map: function () {
+                        return;
+                    }
                 };
 
                 callback();
