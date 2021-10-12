@@ -58,7 +58,7 @@ class AngularTemplateCacheWebpackPlugin {
         const TEMPLATE_HEADER = 'angular.module(\'<%= module %>\'<%= standalone %>).run([\'$templateCache\', function($templateCache) {';
         const TEMPLATE_BODY = '$templateCache.put(\'<%= url %>\',\'<%= contents %>\');';
         const TEMPLATE_FOOTER = '}]);';
-        const DEFAULT_FILENAME = 'templates.js';
+        const DEFAULT_FILENAME = 'templates.[contenthash].js';
         const DEFAULT_MODULE = 'templates';
 
         const userOptions = options || {};
@@ -80,6 +80,23 @@ class AngularTemplateCacheWebpackPlugin {
         this.init();
     }
 
+    getContentHash(compiler, compilation, source) {
+        const { outputOptions } = compilation;
+        const { hashDigest, hashDigestLength, hashFunction, hashSalt } =
+            outputOptions;
+        const hash = compiler.webpack.util.createHash(hashFunction);
+
+        if (hashSalt) {
+            hash.update(hashSalt);
+        }
+
+        hash.update(source);
+
+        const fullContentHash = hash.digest(hashDigest);
+
+        return fullContentHash.slice(0, hashDigestLength);
+    }
+
     apply(compiler) {
         compiler.hooks.thisCompilation.tap('AngularTemplateCacheWebpackPlugin', (compilation) => {
             this.files.forEach(f => compilation.fileDependencies.add(path.join(compiler.context, f)));
@@ -92,8 +109,11 @@ class AngularTemplateCacheWebpackPlugin {
                     cachedTemplates += template + '\n';
                 });
 
+                const hashedFilename = this.getContentHash(compiler, compilation, cachedTemplates);
+                const fileName = this.options.outputFilename.replace('[contenthash]', hashedFilename);
+
                 // Insert this list into the webpack build as a new file asset:
-                compilation.assets[this.options.outputFilename] = {
+                compilation.assets[fileName] = {
                     source: function () {
                         return cachedTemplates;
                     },
