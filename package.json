@@ -1,5 +1,5 @@
 {
-  "name": "@slargemain/angular-templatecache-webpack-plugin",
+  "name": "@clarivate/angular-templatecache-webpack-plugin",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Webpack plugin that concatenates and registers AngularJS templates in the $templateCache.",
@@ -35,7 +35,7 @@
     "plugin",
     "cache busting"
   ],
-  "bugs": "https://github.com/rafaelmussi/angular-templatecache-webpack-plugin/issues",
-  "homepage": "https://github.com/rafaelmussi/angular-templatecache-webpack-plugin",
-  "repository": "https://github.com/rafaelmussi/angular-templatecache-webpack-plugin.git"
+  "bugs": "https://github.com/slargemain/angular-templatecache-webpack-plugin/issues",
+  "homepage": "https://github.com/slargemain/angular-templatecache-webpack-plugin",
+  "repository": "https://github.com/slargemain/angular-templatecache-webpack-plugin.git"
 }
